@@ -30,6 +30,7 @@ def raw_values_per_proc_config(data_loader):
 	
 		for ev in data_loader.get_events():
 			ev_importance = importance(data_loader['name'], reg, ev)
+
 			if ev_importance <= 0.005:
 				continue
 

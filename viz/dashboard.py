@@ -52,6 +52,7 @@ def start_server(webpages, port):
 	index_divs.append(nav)
 	index_divs.append(html.Div(id='page-content'))
 	index_app.layout = html.Div(index_divs)
+	print(index_divs)
 	
 
 	# mimics having different webpages depending on the URL
