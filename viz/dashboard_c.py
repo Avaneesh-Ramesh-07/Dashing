@@ -16,39 +16,43 @@ def dashboard_init(data_loaders, global_options):
 
 	webpages = {}
 	checklist_barchart = dcc.Checklist(
-		id='barchart',
+		id='Barchart',
 		options=[
-			{'label': 'barchart', 'value': 'barchart'}
+			{'label': 'Barchart', 'value': 'Barchart'}
 			],
-		value=['barchart']
+		value=['Barchart'],
+		style={'display': 'block', 'font-family': 'georgia', 'font-size': '20px'}
 	)
 	checklist_heatmap = dcc.Checklist(
-		id='heatmap',
+		id='Heatmap',
 		options=[
-			{'label': 'heatmap', 'value': 'heatmap'}
+			{'label': 'Heatmap', 'value': 'Heatmap'}
 		],
-		value=['heatmap']
+		value=['Heatmap'],
+		style={'display': 'block', 'font-family': 'georgia', 'font-size': '20px'}
 	)
 	checklist_sunburst = dcc.Checklist(
-		id='sunburst',
+		id='Sunburst',
 		options=[
-			{'label': 'sunburst', 'value': 'sunburst'}
+			{'label': 'Sunburst', 'value': 'Sunburst'}
 		],
-		value=['sunburst']
+		value=['Sunburst'],
+		style={'display': 'block', 'font-family': 'georgia', 'font-size': '20px'}
 	)
 	checklist_rsm = dcc.Checklist(
-		id='rsm',
+		id='RSM',
 		options=[
-			{'label': 'rsm', 'value': 'rsm'}
+			{'label': 'RSM', 'value': 'RSM'}
 		],
-		value=['rsm']
+		value=['RSM'],
+		style={'display': 'block', 'font-family': 'georgia', 'font-size': '20px'}
 	)
 
 
 	for app_name, data_loader in data_loaders.items():
 		output_list = create_page(data_loader)
 		if data_loader.options['charts']:
-			webpages[app_name] = [checklist_barchart, checklist_heatmap, checklist_sunburst, checklist_rsm,output_list[0]]
+			webpages[app_name] = [checklist_barchart, checklist_heatmap, checklist_sunburst, checklist_rsm, html.Br(), html.Br(), html.Br(), output_list[0]]
 	#			for fig in data_loader.options['charts']:
 	#				fig.write_image("images/%s.pdf" % app_name)
 
@@ -76,12 +80,18 @@ def dashboard_init(data_loaders, global_options):
 # creates a div element that represents a whole webpage
 # containing all visualizations for an app
 def create_page(data_loader):
+	chart_dict={
+		0:'Barchart',
+		1:'Heatmap',
+		2:'Sunburst',
+		3:'RSM'
+	}
 	charts = data_loader["charts"]
 	title = data_loader.get_option('title', 'untitled chart')
 	chart_elems = list(html.H1(children=title))
 	index=0
 	for chart in charts:
-		chart_elems.append(html.Div([dcc.Graph(id='chart'+str(index), figure=chart)], style={'display':'block'}))
+		chart_elems.append(html.Div([html.H1(chart_dict[index], style={'display':'block', 'font-family':'georgia','font-size':'28px'}), dcc.Graph(id='chart'+str(index), figure=chart), html.Br(), html.Br()], style={'display':'block', 'font-family':'georgia','font-size':'16px'}))
 		index+=1
 	return html.Div(id='chart_list', children=chart_elems), chart_elems
 
@@ -103,7 +113,7 @@ def start_server(webpages, port):
 	index_divs = [dcc.Location(id='url', refresh=False)]
 	index_divs.append(nav)
 	index_divs.append(html.Div(id='page-content'))
-	index_app.layout = html.Div(index_divs)
+	index_app.layout = html.Div(index_divs, style={'backgroundColor':'#E0DDDD'})
 
 	# mimics having different webpages depending on the URL
 	@index_app.callback(dash.dependencies.Output('page-content', 'children'),
@@ -118,7 +128,7 @@ def start_server(webpages, port):
 
 	"""dash.dependencies.Output('chart2', 'style'),"""
 	@index_app.callback(dash.dependencies.Output('chart0', 'style'),
-						dash.dependencies.Input('barchart', 'value'), suppress_callback_exceptions=True)
+						dash.dependencies.Input('Barchart', 'value'), suppress_callback_exceptions=True)
 	def update_with_barchart(arg):
 		if arg is None:return
 		if len(arg)>0:
@@ -127,7 +137,7 @@ def start_server(webpages, port):
 			return {'display':'none'}
 
 	@index_app.callback(dash.dependencies.Output('chart1', 'style'),
-						dash.dependencies.Input('heatmap', 'value'), suppress_callback_exceptions=True)
+						dash.dependencies.Input('Heatmap', 'value'), suppress_callback_exceptions=True)
 	def update_with_heatmap(arg):
 		if arg is None: return
 		if len(arg) > 0:
@@ -136,7 +146,7 @@ def start_server(webpages, port):
 			return {'display': 'none'}
 
 	@index_app.callback(dash.dependencies.Output('chart2', 'style'),
-						dash.dependencies.Input('sunburst', 'value'), suppress_callback_exceptions=True)
+						dash.dependencies.Input('Sunburst', 'value'), suppress_callback_exceptions=True)
 	def update_with_sunburst(arg):
 		if arg is None: return
 		if len(arg) > 0:
@@ -145,7 +155,7 @@ def start_server(webpages, port):
 			return {'display': 'none'}
 
 	@index_app.callback(dash.dependencies.Output('chart3', 'style'),
-						dash.dependencies.Input('rsm', 'value'), suppress_callback_exceptions=True)
+						dash.dependencies.Input('RSM', 'value'), suppress_callback_exceptions=True)
 	def update_with_rsm(arg):
 		if arg is None: return
 		if len(arg) > 0:
