@@ -42,7 +42,7 @@ def dashboard_init(data_loaders, global_options):
 	checklist_rsm = dcc.Checklist(
 		id='RSM',
 		options=[
-			{'label': 'RSM', 'value': 'RSM'}
+			{'label': 'RSM Line Graph', 'value': 'RSM'}
 		],
 		value=['RSM'],
 		style={'display': 'block', 'font-family': 'georgia', 'font-size': '20px'}
@@ -50,9 +50,8 @@ def dashboard_init(data_loaders, global_options):
 
 
 	for app_name, data_loader in data_loaders.items():
-		output_list = create_page(data_loader)
 		if data_loader.options['charts']:
-			webpages[app_name] = [checklist_barchart, checklist_heatmap, checklist_sunburst, checklist_rsm, html.Br(), html.Br(), html.Br(), output_list[0]]
+			webpages[app_name] = [checklist_barchart, checklist_heatmap, checklist_sunburst, checklist_rsm, html.Br(), html.Br(), html.Br(), create_page(data_loader)]
 	#			for fig in data_loader.options['charts']:
 	#				fig.write_image("images/%s.pdf" % app_name)
 
@@ -81,19 +80,21 @@ def dashboard_init(data_loaders, global_options):
 # containing all visualizations for an app
 def create_page(data_loader):
 	chart_dict={
-		0:'Barchart',
-		1:'Heatmap',
-		2:'Sunburst',
-		3:'RSM'
+		0:'Barchart:',
+		1:'Heatmap:',
+		2:'Sunburst:',
+		3:'RSM Line Graph:'
 	}
 	charts = data_loader["charts"]
 	title = data_loader.get_option('title', 'untitled chart')
 	chart_elems = list(html.H1(children=title))
 	index=0
 	for chart in charts:
-		chart_elems.append(html.Div([html.H1(chart_dict[index], style={'display':'block', 'font-family':'georgia','font-size':'28px'}), dcc.Graph(id='chart'+str(index), figure=chart), html.Br(), html.Br()], style={'display':'block', 'font-family':'georgia','font-size':'16px'}))
+		chart_elems.append(html.Div([html.H1(chart_dict[index], style={'display':'inline-block',
+																	   'font-family':'georgia','font-size':'28px'}),
+									 dcc.Graph(id='chart'+str(index), figure=chart),  html.Br(), html.Br()]))
 		index+=1
-	return html.Div(id='chart_list', children=chart_elems), chart_elems
+	return html.Div(id='chart_list', children=chart_elems)
 
 def start_server(webpages, port):
 
@@ -113,7 +114,7 @@ def start_server(webpages, port):
 	index_divs = [dcc.Location(id='url', refresh=False)]
 	index_divs.append(nav)
 	index_divs.append(html.Div(id='page-content'))
-	index_app.layout = html.Div(index_divs, style={'backgroundColor':'#E0DDDD'})
+	index_app.layout = html.Div(index_divs, style={'backgroundColor':'#FCF9F9'})
 
 	# mimics having different webpages depending on the URL
 	@index_app.callback(dash.dependencies.Output('page-content', 'children'),
